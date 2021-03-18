@@ -1,5 +1,7 @@
 package com.mygdx.abyssi;
 
+import javax.swing.text.html.parser.Entity;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -26,9 +28,9 @@ public class Abyssi extends ApplicationAdapter {
 	private int xMs = 0, yMs = 0;
 	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false;
 	
-	private Array<Rectangle> monsters;
+	private Array<Enemy> enemies;
 	private int maxMonsters = 5;
-	private int currentMonsters = 0;
+//	private int currentMonsters = 0;
 
 	@Override
 	public void create() {
@@ -46,16 +48,18 @@ public class Abyssi extends ApplicationAdapter {
 		player.width = 1;
 		player.height = 1;
 		
-		monsters = new Array<Rectangle>();
+		enemies = new Array<Enemy>();
+		
+		for(int i = 0; i < maxMonsters; i++) {
+			spawnMonster();
+		}
+		
+		
 	}
 	
 	private void spawnMonster() {
-		Rectangle monster = new Rectangle();
-		monster.x = MathUtils.random(0, 800 - 60);
-		monster.y = MathUtils.random(64, 200);
-		monster.width = 60;
-		monster.height = 60;
-		monsters.add(monster);
+		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 200), MathUtils.random(0, 800 - 60));
+		enemies.add(enemy);
 	}
 
 	@Override
@@ -67,6 +71,11 @@ public class Abyssi extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		
 		batch.begin();
+		
+		for(Enemy enemy: enemies) {
+			batch.draw(goblin, enemy.getXPos(), enemy.getYPos() );
+		}
+		
 		batch.draw(knight, player.x, player.y);
 		batch.end();
 		
