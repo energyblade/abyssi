@@ -23,7 +23,8 @@ public class Abyssi extends ApplicationAdapter {
 	private Rectangle player;
 	
 	private int maxMs = 300;
-	private int xMs = 0, yMs = 0, xDirection = 0, yDirection = 0;
+	private int xMs = 0, yMs = 0;
+	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirection = false;
 
 	@Override
 	public void create() {
@@ -53,11 +54,66 @@ public class Abyssi extends ApplicationAdapter {
 		batch.draw(knight, player.x, player.y);
 		batch.end();
 		
-		if(Gdx.input.isKeyPressed(Keys.A)) player.x -= 200 * Gdx.graphics.getDeltaTime();
-	    if(Gdx.input.isKeyPressed(Keys.D)) player.x += 200 * Gdx.graphics.getDeltaTime();
-	    if(Gdx.input.isKeyPressed(Keys.W)) player.y += 200 * Gdx.graphics.getDeltaTime();
-	    if(Gdx.input.isKeyPressed(Keys.S)) player.y -= 200 * Gdx.graphics.getDeltaTime();
+		if(Gdx.input.isKeyPressed(Keys.A)) {
+			
+			if(xMs > 0) {
+				xMs -= 40;
+			}else if(xMs > -maxMs) {
+				xMs -= 5 - (xMs * 0.2);
+			}else if(xMs < -maxMs) {
+				xMs = -maxMs;
+			}
+			
+			xDirectionMinus = true;
 
+		}else {
+			xDirectionMinus = false;
+		}
+
+		if(Gdx.input.isKeyPressed(Keys.D)) {
+			
+			if(xMs < 0) {
+				xMs += 40;
+			}else if(xMs < maxMs) {
+				xMs += 5 + (xMs * 0.2);
+			}else if(xMs > maxMs) {
+				xMs = maxMs;
+			}
+			
+			xDirectionPlus = true;
+			xDirectionMinus = false;
+
+		}else {
+			xDirectionPlus = false;
+		}
+		
+	    if(Gdx.input.isKeyPressed(Keys.W)) {
+	    	yDirection = true; 
+	    }else {
+	    	yDirection = false;
+	    }
+	    
+	    if(Gdx.input.isKeyPressed(Keys.S)) {
+	    	yDirection = true;
+	    }else {
+	    	yDirection = false;
+	    }
+
+	   if(xDirectionPlus == false && xDirectionMinus == false) {
+		   if(xMs > 0) {
+			   xMs -= 5 + (xMs * 0.05);
+		   }else if(xMs < 20) {
+		   }
+		   
+		   if(xMs < 0) {
+			   xMs += 5 + (-xMs * 0.05);
+		   }else if(xMs > -20) {
+		   }
+		  
+	   }
+	    
+	    player.x += xMs * Gdx.graphics.getDeltaTime();
+	    
 	    if(player.x < 0) player.x = 0;
 	    if(player.x > 1920 - player.getHeight()) player.x = 1920 - player.getHeight();
 	    if(player.y < 0) player.y = 0;
@@ -71,4 +127,3 @@ public class Abyssi extends ApplicationAdapter {
 		knight.dispose();
 	}
 }
-
