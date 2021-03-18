@@ -21,27 +21,33 @@ public class Abyssi extends ApplicationAdapter {
 	private Texture knight;
 	private OrthographicCamera camera;
 	private Rectangle player;
+	
+	private int maxMs = 300;
+	private int xMs = 0, yMs = 0, xDirection = 0, yDirection = 0;
 
 	@Override
 	public void create() {
+		
+		knight = new Texture("knight.png");
+		
+		camera = new OrthographicCamera();
+	    camera.setToOrtho(false, 1920, 1080);
 		batch = new SpriteBatch();
-		knight = new Texture("knight.jpg");
 		
 		player = new Rectangle();
 		player.x = 1920 / 2 - 64 / 2;
 		player.y = 1080 / 2;
-		player.width = 100;
-		player.height = 100;
+		player.width = 1;
+		player.height = 1;
 	}
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		ScreenUtils.clear(0, 0, 0.2f, 1);
 		
-		//camera.update();
+		camera.update();
 		
-		//batch.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(camera.combined);
 		
 		batch.begin();
 		batch.draw(knight, player.x, player.y);
@@ -65,3 +71,4 @@ public class Abyssi extends ApplicationAdapter {
 		knight.dispose();
 	}
 }
+
