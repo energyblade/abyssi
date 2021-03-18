@@ -102,14 +102,15 @@ public class Abyssi extends ApplicationAdapter {
 	   if(xDirectionPlus == false && xDirectionMinus == false) {
 		   if(xMs > 0) {
 			   xMs -= 5 + (xMs * 0.05);
-		   }else if(xMs < 20) {
 		   }
 		   
 		   if(xMs < 0) {
 			   xMs += 5 + (-xMs * 0.05);
-		   }else if(xMs > -20) {
 		   }
 		  
+		   if(xMs < 0.001 || xMs > - 0.001) {
+			   xMs -= xMs * 0.1;
+		   }
 	   }
 	    
 	    player.x += xMs * Gdx.graphics.getDeltaTime();
