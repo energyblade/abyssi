@@ -1,0 +1,53 @@
+package com.mygdx.abyssi;
+
+import com.badlogic.gdx.math.Vector2;
+
+public class Enemy {
+	private int Ms = 100;
+	private int health;
+	private int attack;
+	private int type;
+	private float xPos, yPos;
+	
+	public Enemy(int attackType, int hp, int ad, float x, float y) {
+		setHealth(hp);
+		setAttack(ad);
+		setAttackType(attackType);
+		setPos(x, y);
+	}
+
+	private void setAttackType(int attackType) {
+		type = attackType;
+		
+	}
+
+	private void setAttack(int ad) {
+		attack = ad;
+		
+	}
+
+	private void setHealth(int hp) {
+		health = hp;
+		
+	}
+	
+	private void setPos(float x, float y) {
+		xPos = x;
+		yPos = y;
+	}
+	
+	private int getHealth() {
+		return health;
+	}
+	
+	private int getAttack() {
+		return attack;
+	}
+	
+	public float getXPos() {
+		return xPos;
+	}
+	
+	public float getYPos() {
+		return yPos;
+	}
