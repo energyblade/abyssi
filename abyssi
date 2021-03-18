@@ -18,18 +18,23 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class Abyssi extends ApplicationAdapter {
 	SpriteBatch batch;
-	private Texture knight;
+	private Texture knight, goblin;
 	private OrthographicCamera camera;
 	private Rectangle player;
 	
-	private int maxMs = 300;
+	private int maxMs = 400;
 	private int xMs = 0, yMs = 0;
-	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirection = false;
+	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false;
+	
+	private Array<Rectangle> monsters;
+	private int maxMonsters = 5;
+	private int currentMonsters = 0;
 
 	@Override
 	public void create() {
 		
 		knight = new Texture("knight.png");
+		goblin = new Texture("goblin.png");
 		
 		camera = new OrthographicCamera();
 	    camera.setToOrtho(false, 1920, 1080);
@@ -40,6 +45,17 @@ public class Abyssi extends ApplicationAdapter {
 		player.y = 1080 / 2;
 		player.width = 1;
 		player.height = 1;
+		
+		monsters = new Array<Rectangle>();
+	}
+	
+	private void spawnMonster() {
+		Rectangle monster = new Rectangle();
+		monster.x = MathUtils.random(0, 800 - 60);
+		monster.y = MathUtils.random(64, 200);
+		monster.width = 60;
+		monster.height = 60;
+		monsters.add(monster);
 	}
 
 	@Override
@@ -57,14 +73,15 @@ public class Abyssi extends ApplicationAdapter {
 		if(Gdx.input.isKeyPressed(Keys.A)) {
 			
 			if(xMs > 0) {
-				xMs -= 40;
+				xMs -= 50;
 			}else if(xMs > -maxMs) {
-				xMs -= 5 - (xMs * 0.2);
+				xMs -= 5 - (xMs * 0.5);
 			}else if(xMs < -maxMs) {
 				xMs = -maxMs;
 			}
 			
 			xDirectionMinus = true;
+			xDirectionPlus = false;
 
 		}else {
 			xDirectionMinus = false;
@@ -73,9 +90,9 @@ public class Abyssi extends ApplicationAdapter {
 		if(Gdx.input.isKeyPressed(Keys.D)) {
 			
 			if(xMs < 0) {
-				xMs += 40;
+				xMs += 50;
 			}else if(xMs < maxMs) {
-				xMs += 5 + (xMs * 0.2);
+				xMs += 5 + (xMs * 0.5);
 			}else if(xMs > maxMs) {
 				xMs = maxMs;
 			}
@@ -88,32 +105,63 @@ public class Abyssi extends ApplicationAdapter {
 		}
 		
 	    if(Gdx.input.isKeyPressed(Keys.W)) {
-	    	yDirection = true; 
+	    	if(yMs < 0) {
+				yMs += 50;
+			}else if(yMs < maxMs) {
+				yMs += 5 + (yMs * 0.5);
+			}else if(yMs > maxMs) {
+				yMs = maxMs;
+			}
+	    	yDirectionPlus = true; 
+	    	yDirectionMinus = false;
 	    }else {
-	    	yDirection = false;
+	    	yDirectionPlus = false;
 	    }
 	    
 	    if(Gdx.input.isKeyPressed(Keys.S)) {
-	    	yDirection = true;
+	    	if(yMs > 0) {
+	    		yMs -= 50;
+			}else if(yMs > -maxMs) {
+				yMs -= 5 - (yMs * 0.5);
+			}else if(yMs < -maxMs) {
+				yMs = -maxMs;
+			}
+	    	yDirectionMinus = true;
+	    	yDirectionPlus = false;
 	    }else {
-	    	yDirection = false;
+	    	yDirectionMinus = false;
 	    }
 
 	   if(xDirectionPlus == false && xDirectionMinus == false) {
 		   if(xMs > 0) {
-			   xMs -= 5 + (xMs * 0.05);
+			   xMs -= 5 + (xMs * 0.03);
 		   }
 		   
 		   if(xMs < 0) {
-			   xMs += 5 + (-xMs * 0.05);
+			   xMs += 5 + (-xMs * 0.03);
 		   }
 		  
 		   if(xMs < 0.001 || xMs > - 0.001) {
 			   xMs -= xMs * 0.1;
 		   }
 	   }
+	   
+	   if(yDirectionPlus == false && yDirectionMinus == false) {
+		   if(yMs > 0) {
+			   yMs -= 5 + (yMs * 0.03);
+		   }
+		   
+		   if(yMs < 0) {
+			   yMs += 5 + (-yMs * 0.03);
+		   }
+		  
+		   if(yMs < 0.001 || yMs > - 0.001) {
+			   yMs -= yMs * 0.1;
+		   }
+	   }
 	    
 	    player.x += xMs * Gdx.graphics.getDeltaTime();
+	    player.y += yMs * Gdx.graphics.getDeltaTime();
 	    
 	    if(player.x < 0) player.x = 0;
 	    if(player.x > 1920 - player.getHeight()) player.x = 1920 - player.getHeight();
