@@ -39,7 +39,7 @@ public class Enemy {
 		
 	}
 
-	private void setHealth(int hp) {
+	public void setHealth(int hp) {
 		health = hp;
 		
 	}
@@ -49,7 +49,7 @@ public class Enemy {
 		yPos = y;
 	}
 	
-	private int getHealth() {
+	public int getHealth() {
 		return health;
 	}
 	
