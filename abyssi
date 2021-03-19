@@ -16,13 +16,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class Abyssi extends ApplicationAdapter {
-	SpriteBatch batch;
+	SpriteBatch batch; 
 	private Texture knight, goblin, sword;
 	private OrthographicCamera camera;
 	private Rectangle player, swordRect;
@@ -31,11 +32,13 @@ public class Abyssi extends ApplicationAdapter {
 	private int maxMs = 400;
 	private int xMs = 0, yMs = 0;
 	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false;
+	private Vector3 mousePos;
+	private float degrees;
 
 	private Array<Enemy> enemies;
 //	private Array<Rectangle> goblins;
 	private int maxMonsters = 5;
-//	private int currentMonsters = 0;
+	private int currentMonsters = 0;
 
 	@Override
 	public void create() {
@@ -72,152 +75,197 @@ public class Abyssi extends ApplicationAdapter {
 
 		for (int i = 0; i < maxMonsters; i++) {
 			spawnMonster();
+
 		}
 
 	}
 
 	private void spawnMonster() {
-		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 200), MathUtils.random(0, 800 - 60));
+		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 1800), MathUtils.random(0, 900), true);
 		enemies.add(enemy);
+	}
 
+	private void respawnMonsters() {
+		for (Enemy enemy : enemies) {
+			System.out.println("reviving...");
+			enemy.setHealth(100);
+			enemy.setPos(MathUtils.random(64, 1800), MathUtils.random(0, 900));
+		}
 	}
 
 	@Override
 	public void render() {
+		mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+
 		ScreenUtils.clear(0, 0, 0.2f, 1);
-		
+
 		camera.update();
-		
+
 		batch.setProjectionMatrix(camera.combined);
-		
+
 		batch.begin();
-		
-		for(Enemy enemy: enemies) {
-			batch.draw(goblin, enemy.getXPos(), enemy.getYPos() );
+
+		for (Enemy enemy : enemies) {
+			if (enemy.getIsAlive()) {
+				batch.draw(goblin, enemy.getXPos(), enemy.getYPos());
+			}
+
 		}
+		degrees = (float) ((Math.atan2(mousePos.x - player.x, -(mousePos.y - player.y)) * 180.0d / Math.PI) - 180.0f);
+		knightS.setRotation(degrees);
 		knightS.draw(batch);
 		batch.draw(sword, swordRect.x, swordRect.y);
-		//batch.draw(knight, player.x, player.y);
+		// batch.draw(knight, player.x, player.y);
 		batch.end();
-		
-		if(Gdx.input.isKeyPressed(Keys.A)) {//LEFT
-			knightS.setRotation(90f);
-			if(xMs == 0 && yMs != 0) {
-			
+
+		if (Gdx.input.isKeyPressed(Keys.A)) {// LEFT
+//			knightS.setRotation(90f);
+			if (xMs == 0 && yMs != 0) {
+
 				xMs = -maxMs;
-			}else if(xMs > 0) {
+			} else if (xMs > 0) {
 				xMs -= 50;
-			}else if(xMs > -maxMs) {
+			} else if (xMs > -maxMs) {
 				xMs -= 5 - (xMs * 0.5);
-			}else if(xMs < -maxMs) {
+			} else if (xMs < -maxMs) {
 				xMs = -maxMs;
 			}
-			
+
 			xDirectionMinus = true;
 			xDirectionPlus = false;
 
-		}else {
+		} else {
 			xDirectionMinus = false;
 		}
 
-		if(Gdx.input.isKeyPressed(Keys.D)) {//RIGHT
-			knightS.setRotation(-90f);
-			if(xMs == 0 && yMs != 0) {
+		if (Gdx.input.isKeyPressed(Keys.D)) {// RIGHT
+//			knightS.setRotation(-90f);
+			if (xMs == 0 && yMs != 0) {
 				xMs = maxMs;
-			}else if(xMs < 0) {
+			} else if (xMs < 0) {
 				xMs += 50;
-			}else if(xMs < maxMs) {
+			} else if (xMs < maxMs) {
 				xMs += 5 + (xMs * 0.5);
-			}else if(xMs > maxMs) {
+			} else if (xMs > maxMs) {
 				xMs = maxMs;
 			}
-			
+
 			xDirectionPlus = true;
 			xDirectionMinus = false;
 
-		}else {
+		} else {
 			xDirectionPlus = false;
 		}
-		
-	    if(Gdx.input.isKeyPressed(Keys.W)) {//UP
-	    	knightS.setRotation(0f);
-	    	if(yMs == 0 && yMs != 0) {
-	    		yMs = maxMs;
-			}else if(yMs < 0) {
+
+		if (Gdx.input.isKeyPressed(Keys.W)) {// UP
+//	    	knightS.setRotation(0f);
+			if (yMs == 0 && yMs != 0) {
+				yMs = maxMs;
+			} else if (yMs < 0) {
 				yMs += 50;
-			}else if(yMs < maxMs) {
+			} else if (yMs < maxMs) {
 				yMs += 5 + (yMs * 0.5);
-			}else if(yMs > maxMs) {
+			} else if (yMs > maxMs) {
 				yMs = maxMs;
 			}
-	    	yDirectionPlus = true; 
-	    	yDirectionMinus = false;
-	    }else {
-	    	yDirectionPlus = false;
-	    }
-	    
-	    if(Gdx.input.isKeyPressed(Keys.S)) {//DOWN
-	    knightS.setRotation(180f);
-	    	if(yMs == 0 && yMs != 0) {
-	    		yMs = -maxMs;
-			}else if(yMs > 0) {
-	    		yMs -= 50;
-			}else if(yMs > -maxMs) {
+			yDirectionPlus = true;
+			yDirectionMinus = false;
+		} else {
+			yDirectionPlus = false;
+		}
+
+		if (Gdx.input.isKeyPressed(Keys.S)) {// DOWN
+//	    knightS.setRotation(180f);
+			if (yMs == 0 && yMs != 0) {
+				yMs = -maxMs;
+			} else if (yMs > 0) {
+				yMs -= 50;
+			} else if (yMs > -maxMs) {
 				yMs -= 5 - (yMs * 0.5);
-			}else if(yMs < -maxMs) {
+			} else if (yMs < -maxMs) {
 				yMs = -maxMs;
 			}
-	    	yDirectionMinus = true;
-	    	yDirectionPlus = false;
-	    }else {
-	    	yDirectionMinus = false;
-	    }
+			yDirectionMinus = true;
+			yDirectionPlus = false;
+		} else {
+			yDirectionMinus = false;
+		}
 
-	   if(xDirectionPlus == false && xDirectionMinus == false) {
-		   if(xMs > 0) {
-			   xMs -= 5 + (xMs * 0.03);
-		   }
-		   
-		   if(xMs < 0) {
-			   xMs += 5 + (-xMs * 0.03);
-		   }
-		  
-		   if(xMs < 0.001 || xMs > - 0.001) {
-			   xMs -= xMs * 0.1;
-		   }
-	   }
-	   
-	   if(yDirectionPlus == false && yDirectionMinus == false) {
-		   if(yMs > 0) {
-			   yMs -= 5 + (yMs * 0.03);
-		   }
-		   
-		   if(yMs < 0) {
-			   yMs += 5 + (-yMs * 0.03);
-		   }
-		  
-		   if(yMs < 0.001 || yMs > - 0.001) {
-			   yMs -= yMs * 0.1;
-		   }
-	   }
-	    
-	    player.x += xMs * Gdx.graphics.getDeltaTime();
-	    player.y += yMs * Gdx.graphics.getDeltaTime();
-	    
-	    if(player.x < 0) player.x = 0;
-	    if(player.x > 1920 - player.getWidth()) player.x = 1920 - player.getWidth();
-	    if(player.y < 0) player.y = 0;
-	    if(player.y > 1080 - player.getWidth()) player.y = 1080 - player.getWidth();
+		if (xDirectionPlus == false && xDirectionMinus == false) {
+			if (xMs > 0) {
+				xMs -= 5 + (xMs * 0.03);
+			}
+
+			if (xMs < 0) {
+				xMs += 5 + (-xMs * 0.03);
+			}
+
+			if (xMs < 0.001 || xMs > -0.001) {
+				xMs -= xMs * 0.1;
+			}
+		}
+
+		if (yDirectionPlus == false && yDirectionMinus == false) {
+			if (yMs > 0) {
+				yMs -= 5 + (yMs * 0.03);
+			}
+
+			if (yMs < 0) {
+				yMs += 5 + (-yMs * 0.03);
+			}
+
+			if (yMs < 0.001 || yMs > -0.001) {
+				yMs -= yMs * 0.1;
+			}
+		}
+
+		player.x += xMs * Gdx.graphics.getDeltaTime();
+		player.y += yMs * Gdx.graphics.getDeltaTime();
+
+		if (player.x < 0)
+			player.x = 0;
+		if (player.x > 1920 - player.getWidth())
+			player.x = 1920 - player.getWidth();
+		if (player.y < 0)
+			player.y = 0;
+		if (player.y > 1080 - player.getWidth())
+			player.y = 1080 - player.getWidth();
 
 		knightS.setPosition(player.x, player.y);
-		swordRect.setPosition(player.getX() + 160, (player.getY() + 100));
+
+		if (mousePos.x > player.x + player.width) {
+			swordRect.setPosition(player.getX() + player.width, swordRect.getY());
+		} else if (mousePos.x < player.x - 86) {
+			swordRect.setPosition(player.getX() - 86, swordRect.getY());
+		} else if (mousePos.x > player.x - 86 && mousePos.x < player.x + player.width) {
+			swordRect.setPosition(mousePos.x, swordRect.getY());
+		}
+
+		if (mousePos.y > player.y + player.height) {
+			swordRect.setPosition(swordRect.getX(), player.y + player.height + 10);
+		} else if (mousePos.y < player.y - 60) {
+			swordRect.setPosition(swordRect.getX(), player.y - 60);
+		} else if (mousePos.y > player.y - 60 && mousePos.y < player.y + player.height) {
+			swordRect.setPosition(swordRect.getX(), mousePos.y);
+		}
+
 		for (Enemy enemy : enemies) {
-			//temp = enemy.getRectangle();
 			if (swordRect.overlaps(enemy.getRectangle()) && Gdx.input.isTouched()) {
 				System.out.println("test");
 				enemy.setHealth(0);
-				batch.setColor(new Color(0,0,0,0));//gets rid of all 
 			}
+		}
+
+		currentMonsters = 0;
+		for(Enemy enemy : enemies) {
+			if(enemy.getIsAlive()) {
+				currentMonsters ++;
+			}
+		}
+		
+		if (currentMonsters == 0) {
+			System.out.println("Room empty, respawning enemies");
+			respawnMonsters();
 		}
 	}
 //			if (enemy.getHealth() = 0) {
