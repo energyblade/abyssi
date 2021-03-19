@@ -10,14 +10,15 @@ public class Enemy {
 	private int attack;
 	private int type;
 	private float xPos, yPos;
+	private boolean isAlive;
 	private Rectangle hitbox;
 	
-	public Enemy(int attackType, int hp, int ad, float x, float y) {
+	public Enemy(int attackType, int hp, int ad, float x, float y, boolean alive) {
 		setHealth(hp);
 		setAttack(ad);
 		setAttackType(attackType);
 		setPos(x, y);
-		setHitbox(getXPos(), getYPos());
+		setIsAlive(alive);
 	}
 
 	private void setHitbox(float x, float y) {
@@ -42,18 +43,29 @@ public class Enemy {
 	public void setHealth(int hp) {
 		health = hp;
 		
+		if(getHealth() <= 0) {
+			setIsAlive(false);
+		}else {
+			setIsAlive(true);
+		}
+		
 	}
 	
-	private void setPos(float x, float y) {
+	public void setPos(float x, float y) {
 		xPos = x;
 		yPos = y;
+		setHitbox(getXPos(), getYPos());
+	}
+	
+	private void setIsAlive(boolean a) {
+		isAlive = a;
 	}
 	
 	public int getHealth() {
 		return health;
 	}
 	
-	private int getAttack() {
+	public int getAttack() {
 		return attack;
 	}
 	
@@ -68,4 +80,10 @@ public class Enemy {
 	public Rectangle getRectangle(){
 		return hitbox;
 	}
+	
+	public boolean getIsAlive() {
+		return isAlive;
+	}
+	
+	
 }
