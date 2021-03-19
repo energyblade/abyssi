@@ -101,9 +101,9 @@ public class Abyssi extends ApplicationAdapter {
 		batch.end();
 		
 		if(Gdx.input.isKeyPressed(Keys.A)) {//LEFT
-			
-			if(xMs == 0 && yMs != 0) {
 			knightS.setRotation(90f);
+			if(xMs == 0 && yMs != 0) {
+			
 				xMs = -maxMs;
 			}else if(xMs > 0) {
 				xMs -= 50;
