@@ -1,5 +1,7 @@
 package com.mygdx.abyssi;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Enemy {
@@ -8,12 +10,23 @@ public class Enemy {
 	private int attack;
 	private int type;
 	private float xPos, yPos;
+	private Rectangle hitbox;
 	
 	public Enemy(int attackType, int hp, int ad, float x, float y) {
 		setHealth(hp);
 		setAttack(ad);
 		setAttackType(attackType);
 		setPos(x, y);
+		setHitbox(getXPos(), getYPos());
+	}
+
+	private void setHitbox(float x, float y) {
+		hitbox = new Rectangle();
+		hitbox.x = x;
+		hitbox.y = y;
+		hitbox.width = 60;
+		hitbox.height = 80;
+		
 	}
 
 	private void setAttackType(int attackType) {
@@ -51,3 +64,8 @@ public class Enemy {
 	public float getYPos() {
 		return yPos;
 	}
+	
+	public Rectangle getRectangle(){
+		return hitbox;
+	}
+}
