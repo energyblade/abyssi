@@ -9,6 +9,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -29,11 +30,16 @@ public class Abyssi extends ApplicationAdapter {
 	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false;
 	
 	private Array<Enemy> enemies;
+//	private Array<Rectangle> goblins;
 	private int maxMonsters = 5;
 //	private int currentMonsters = 0;
 
 	@Override
 	public void create() {
+		
+		Pixmap pm = new Pixmap(Gdx.files.internal("crosshair.png"));
+		Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 0, 0));
+		pm.dispose();
 		
 		knight = new Texture("knight.png");
 		goblin = new Texture("goblin.png");
@@ -45,10 +51,11 @@ public class Abyssi extends ApplicationAdapter {
 		player = new Rectangle();
 		player.x = 1920 / 2 - 64 / 2;
 		player.y = 1080 / 2;
-		player.width = 1;
-		player.height = 1;
+		player.width = 125;
+		player.height = 74;
 		
 		enemies = new Array<Enemy>();
+//		goblins = new Array<Rectangle>();
 		
 		for(int i = 0; i < maxMonsters; i++) {
 			spawnMonster();
@@ -60,6 +67,7 @@ public class Abyssi extends ApplicationAdapter {
 	private void spawnMonster() {
 		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 200), MathUtils.random(0, 800 - 60));
 		enemies.add(enemy);
+		
 	}
 
 	@Override
@@ -81,7 +89,9 @@ public class Abyssi extends ApplicationAdapter {
 		
 		if(Gdx.input.isKeyPressed(Keys.A)) {
 			
-			if(xMs > 0) {
+			if(xMs == 0 && yMs != 0) {
+				xMs = -maxMs;
+			}else if(xMs > 0) {
 				xMs -= 50;
 			}else if(xMs > -maxMs) {
 				xMs -= 5 - (xMs * 0.5);
@@ -98,7 +108,9 @@ public class Abyssi extends ApplicationAdapter {
 
 		if(Gdx.input.isKeyPressed(Keys.D)) {
 			
-			if(xMs < 0) {
+			if(xMs == 0 && yMs != 0) {
+				xMs = maxMs;
+			}else if(xMs < 0) {
 				xMs += 50;
 			}else if(xMs < maxMs) {
 				xMs += 5 + (xMs * 0.5);
@@ -114,7 +126,9 @@ public class Abyssi extends ApplicationAdapter {
 		}
 		
 	    if(Gdx.input.isKeyPressed(Keys.W)) {
-	    	if(yMs < 0) {
+	    	if(yMs == 0 && yMs != 0) {
+	    		yMs = maxMs;
+			}else if(yMs < 0) {
 				yMs += 50;
 			}else if(yMs < maxMs) {
 				yMs += 5 + (yMs * 0.5);
@@ -128,7 +142,9 @@ public class Abyssi extends ApplicationAdapter {
 	    }
 	    
 	    if(Gdx.input.isKeyPressed(Keys.S)) {
-	    	if(yMs > 0) {
+	    	if(yMs == 0 && yMs != 0) {
+	    		yMs = -maxMs;
+			}else if(yMs > 0) {
 	    		yMs -= 50;
 			}else if(yMs > -maxMs) {
 				yMs -= 5 - (yMs * 0.5);
@@ -173,9 +189,9 @@ public class Abyssi extends ApplicationAdapter {
 	    player.y += yMs * Gdx.graphics.getDeltaTime();
 	    
 	    if(player.x < 0) player.x = 0;
-	    if(player.x > 1920 - player.getHeight()) player.x = 1920 - player.getHeight();
+	    if(player.x > 1920 - player.getWidth()) player.x = 1920 - player.getWidth();
 	    if(player.y < 0) player.y = 0;
-	    if(player.y > 1080 - player.getHeight()) player.y = 1080 - player.getHeight();
+	    if(player.y > 1080 - player.getWidth()) player.y = 1080 - player.getWidth();
 
 	}
 
@@ -185,3 +201,4 @@ public class Abyssi extends ApplicationAdapter {
 		knight.dispose();
 	}
 }
+
