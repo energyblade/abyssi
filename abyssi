@@ -21,9 +21,10 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class Abyssi extends ApplicationAdapter {
 	SpriteBatch batch;
-	private Texture knight, goblin;
+	private Texture knight, goblin, sword;
 	private OrthographicCamera camera;
-	private Rectangle player;
+	private Rectangle player, swordRect;
+	Sprite knightS;
 	
 	private int maxMs = 400;
 	private int xMs = 0, yMs = 0;
@@ -43,7 +44,9 @@ public class Abyssi extends ApplicationAdapter {
 		
 		knight = new Texture("knight.png");
 		goblin = new Texture("goblin.png");
-		
+		sword = new Texture("sword.png");
+		knightS = new Sprite(knight);
+
 		camera = new OrthographicCamera();
 	    camera.setToOrtho(false, 1920, 1080);
 		batch = new SpriteBatch();
@@ -54,6 +57,15 @@ public class Abyssi extends ApplicationAdapter {
 		player.width = 125;
 		player.height = 74;
 		
+		swordRect = new Rectangle();
+		swordRect.x = player.getX() + 160;
+		swordRect.x = player.getY() + 100;
+		swordRect.width = 125;
+		swordRect.height = 74;
+		
+		temp = new Rectangle();
+
+
 		enemies = new Array<Enemy>();
 //		goblins = new Array<Rectangle>();
 		
@@ -83,13 +95,15 @@ public class Abyssi extends ApplicationAdapter {
 		for(Enemy enemy: enemies) {
 			batch.draw(goblin, enemy.getXPos(), enemy.getYPos() );
 		}
-		
-		batch.draw(knight, player.x, player.y);
+		knightS.draw(batch);
+		batch.draw(sword, swordRect.x, swordRect.y);
+		//batch.draw(knight, player.x, player.y);
 		batch.end();
 		
-		if(Gdx.input.isKeyPressed(Keys.A)) {
+		if(Gdx.input.isKeyPressed(Keys.A)) {//LEFT
 			
 			if(xMs == 0 && yMs != 0) {
+			knightS.setRotation(90f);
 				xMs = -maxMs;
 			}else if(xMs > 0) {
 				xMs -= 50;
@@ -106,8 +120,8 @@ public class Abyssi extends ApplicationAdapter {
 			xDirectionMinus = false;
 		}
 
-		if(Gdx.input.isKeyPressed(Keys.D)) {
-			
+		if(Gdx.input.isKeyPressed(Keys.D)) {//RIGHT
+			knightS.setRotation(-90f);
 			if(xMs == 0 && yMs != 0) {
 				xMs = maxMs;
 			}else if(xMs < 0) {
@@ -125,7 +139,8 @@ public class Abyssi extends ApplicationAdapter {
 			xDirectionPlus = false;
 		}
 		
-	    if(Gdx.input.isKeyPressed(Keys.W)) {
+	    if(Gdx.input.isKeyPressed(Keys.W)) {//UP
+	    	knightS.setRotation(0f);
 	    	if(yMs == 0 && yMs != 0) {
 	    		yMs = maxMs;
 			}else if(yMs < 0) {
@@ -141,7 +156,8 @@ public class Abyssi extends ApplicationAdapter {
 	    	yDirectionPlus = false;
 	    }
 	    
-	    if(Gdx.input.isKeyPressed(Keys.S)) {
+	    if(Gdx.input.isKeyPressed(Keys.S)) {//DOWN
+	    knightS.setRotation(180f);
 	    	if(yMs == 0 && yMs != 0) {
 	    		yMs = -maxMs;
 			}else if(yMs > 0) {
@@ -193,7 +209,18 @@ public class Abyssi extends ApplicationAdapter {
 	    if(player.y < 0) player.y = 0;
 	    if(player.y > 1080 - player.getWidth()) player.y = 1080 - player.getWidth();
 
-	}
+		knightS.setPosition(player.x, player.y);
+		swordRect.setPosition(player.getX() + 160, (player.getY() + 100));
+		for (Enemy enemy : enemies) {
+			//temp = enemy.getRectangle();
+			if (swordRect.overlaps(enemy.getRectangle()) && Gdx.input.isTouched()) {
+				System.out.println("test");
+				enemy.setHealth(0);
+				batch.setColor(new Color(0,0,0,0));//gets rid of all 
+			}
+//			if (enemy.getHealth() = 0) {
+//				
+//			}
 
 	@Override
 	public void dispose() {
