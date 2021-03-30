@@ -32,6 +32,7 @@ public class GameScreen implements Screen{
 
 	private int maxMs = 400;
 	private int xMs = 0, yMs = 0;
+	private int attack = 50;
 	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false;
 	private Vector3 mousePos;
 	private float degrees;
@@ -84,7 +85,7 @@ public class GameScreen implements Screen{
 	}
 	
 	private void spawnMonster() {
-		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 1800), MathUtils.random(0, 900), true);
+		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 1800), MathUtils.random(0, 900), true, 0);
 		enemies.add(enemy);
 	}
 
@@ -120,7 +121,15 @@ public class GameScreen implements Screen{
 		batch.draw(sword, swordRect.x, swordRect.y);
 		// batch.draw(knight, player.x, player.y);
 		batch.end();
-
+		
+		
+		for (Enemy enemy : enemies) {
+			if (enemy.getIsAlive()) {
+				enemy.searchForPlayer(knightS);
+				enemy.move();
+			}
+		}
+		
 		if (Gdx.input.isKeyPressed(Keys.A)) {// LEFT
 //			knightS.setRotation(90f);
 			if (xMs == 0 && yMs != 0) {
@@ -131,7 +140,7 @@ public class GameScreen implements Screen{
 			} else if (xMs > -maxMs) {
 				xMs -= 5 - (xMs * 0.5);
 			} else if (xMs < -maxMs) {
-				xMs = -maxMs;
+				xMs ++;
 			}
 
 			xDirectionMinus = true;
@@ -150,7 +159,7 @@ public class GameScreen implements Screen{
 			} else if (xMs < maxMs) {
 				xMs += 5 + (xMs * 0.5);
 			} else if (xMs > maxMs) {
-				xMs = maxMs;
+				xMs --;
 			}
 
 			xDirectionPlus = true;
@@ -169,7 +178,7 @@ public class GameScreen implements Screen{
 			} else if (yMs < maxMs) {
 				yMs += 5 + (yMs * 0.5);
 			} else if (yMs > maxMs) {
-				yMs = maxMs;
+				yMs --;
 			}
 			yDirectionPlus = true;
 			yDirectionMinus = false;
@@ -186,7 +195,7 @@ public class GameScreen implements Screen{
 			} else if (yMs > -maxMs) {
 				yMs -= 5 - (yMs * 0.5);
 			} else if (yMs < -maxMs) {
-				yMs = -maxMs;
+				yMs ++;
 			}
 			yDirectionMinus = true;
 			yDirectionPlus = false;
@@ -257,9 +266,24 @@ public class GameScreen implements Screen{
 		}
 
 		for (Enemy enemy : enemies) {
-			if (swordRect.overlaps(enemy.getRectangle()) && Gdx.input.isTouched()) {
+			if (swordRect.overlaps(enemy.getRectangle()) && Gdx.input.isTouched() && enemy.getInvincible() != true) {
 				System.out.println("test");
-				enemy.setHealth(0);
+				enemy.damage(attack, knightS);
+				System.out.println("hit enemy");
+			}
+			
+			if(player.overlaps(enemy.getRectangle())) {
+				if (player.getX() > enemy.getXPos()) {
+					xMs = 500;
+				} else if (player.getX() < enemy.getXPos()) {
+					xMs = -500;
+				}
+
+				if (player.getY() > enemy.getYPos()) {
+					yMs = 500;
+				} else if (player.getY() < enemy.getYPos()) {
+					yMs = -500;
+				}
 			}
 		}
 
@@ -267,6 +291,7 @@ public class GameScreen implements Screen{
 		for(Enemy enemy : enemies) {
 			if(enemy.getIsAlive()) {
 				currentMonsters ++;
+				enemy.clockInvincibility();
 			}
 		}
 		
@@ -274,6 +299,7 @@ public class GameScreen implements Screen{
 			System.out.println("Room empty, respawning enemies");
 			respawnMonsters();
 		}
+		
 	}
 	
 	@Override
