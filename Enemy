@@ -11,7 +11,7 @@ public class Enemy {
 	private int health;
 	private int attack;
 	private int type;
-	private int iFrames = 60, invincibleTimeLeft;
+	private int iFrames = 45, invincibleTimeLeft;
 	private int xSpeed, ySpeed;
 	private float xPos, yPos;
 	private boolean isAlive;
