@@ -39,7 +39,10 @@ public class GameScreen implements Screen{
 	private int currentMonsters = 0;
 	public Player P = new Player();
 	
-	
+	public int gracePeriod = 0;
+	public boolean grace = false;
+	public boolean monstersSpawned = false;
+	public boolean fightingRoom = true, isFighting = false;
 	
 	public GameScreen(final Abyssi game) {
 		this.game = game;
@@ -68,13 +71,13 @@ public class GameScreen implements Screen{
 
 		for (int i = 0; i < maxMonsters; i++) {
 			spawnMonster();
-
 		}
 
 	}
 
 	private void spawnMonster() {
-		Enemy enemy = new Enemy(1, 0, 20, MathUtils.random(64, 1800), MathUtils.random(0, 900), true, 0);
+		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 1800), MathUtils.random(0, 500), true, 0);
+		enemy.setHealth(0);
 		enemies.add(enemy);
 	}
 
@@ -82,7 +85,7 @@ public class GameScreen implements Screen{
 		for (Enemy enemy : enemies) {
 			System.out.println("reviving...");
 			enemy.setHealth(100);
-			enemy.setPos(MathUtils.random(64, 1800), MathUtils.random(0, 900));
+			enemy.setPos(MathUtils.random(64, 1800), MathUtils.random(400, 900));
 		}
 	}
 	
@@ -93,7 +96,7 @@ public class GameScreen implements Screen{
 		batch.setProjectionMatrix(camera.combined);
 		
 		Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-		P.move(mousePos.x, mousePos.y);
+		
 		
 		batch.begin();
 
@@ -104,7 +107,8 @@ public class GameScreen implements Screen{
 
 		}
 		
-		
+		P.move(mousePos.x, mousePos.y);
+		roomEvents();
 
 		knightS.setPosition(P.getPlayerRectX(), P.getPlayerRectY());
 		P.setDegrees(mousePos.x, mousePos.y);
@@ -114,13 +118,38 @@ public class GameScreen implements Screen{
 		// batch.draw(knight, player.x, player.y);
 		batch.end();
 		
-		enemyPhysics();
+		
+		
 		
 		
 	}
 	
+	private void roomEvents() {
+		if(grace != true && fightingRoom) {
+		enemyPhysics();
+		
+		}else if(gracePeriod > 0 && fightingRoom) {
+			gracePeriod --;
+			if(gracePeriod == 0) {
+				grace = false;
+				isFighting = true;
+				respawnMonsters();
+			}
+		}
+		
+		if(fightingRoom && isFighting == false) {
+			if(P.getPlayerRectY() > 900 && P.getPlayerRectX() < 1000 && P.getPlayerRectX() > 600) {
+				P.setPlayerRectX(1980 / 2);
+				P.setPlayerRectY(100);
+				System.out.println("Changing room");
+				grace = true;
+				gracePeriod = 360;
+			}
+		}
+	}
+
 	public void enemyPhysics() {
-		for (Enemy enemy : enemies) {
+			for (Enemy enemy : enemies) {
 			if (enemy.getIsAlive()) {
 				enemy.searchForPlayer(knightS);
 				enemy.move();
@@ -166,9 +195,12 @@ public class GameScreen implements Screen{
 		}
 		
 		if (currentMonsters == 0) {
-			//System.out.println("Room empty, respawning enemies");
-			respawnMonsters();
+			isFighting = false;
 		}
+		
+		
+		
+		
 	}
 	
 	@Override
