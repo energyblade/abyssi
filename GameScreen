@@ -20,28 +20,26 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.mygdx.abyssi.Abyssi;
 import com.mygdx.abyssi.Enemy;
+import com.mygdx.abyssi.Player;
 
 public class GameScreen implements Screen{
 	final Abyssi game;
 	
 	public SpriteBatch batch; 
+	public Sprite knightS;
 	private Texture knight, goblin, sword;
 	private OrthographicCamera camera;
-	private Rectangle player, swordRect;
-	Sprite knightS;
-
-	private int maxMs = 400;
-	private int xMs = 0, yMs = 0;
-	private int attack = 50;
-	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false;
-	private Vector3 mousePos;
-	private float degrees;
+	
+	
+	public Rectangle tempP, tempS;
+	
 
 	private Array<Enemy> enemies;
-//	private Array<Rectangle> goblins;
 	private int maxMonsters = 5;
 	private int currentMonsters = 0;
-	public Object font;
+	public Player P = new Player();
+	
+	
 	
 	public GameScreen(final Abyssi game) {
 		this.game = game;
@@ -60,18 +58,9 @@ public class GameScreen implements Screen{
 		camera.setToOrtho(false, 1920, 1080);
 		batch = new SpriteBatch();
 
-		player = new Rectangle();
-		player.x = 1920 / 2 - 64 / 2;
-		player.y = 1080 / 2;
-		player.width = 125;
-		player.height = 74;
+		
 
-		swordRect = new Rectangle();
-		swordRect.x = player.getX() + 160;
-		swordRect.x = player.getY() + 100;
-		swordRect.width = 125;
-		swordRect.height = 74;
-
+		
 		// temp = new Rectangle();
 
 		enemies = new Array<Enemy>();
@@ -83,9 +72,9 @@ public class GameScreen implements Screen{
 		}
 
 	}
-	
+
 	private void spawnMonster() {
-		Enemy enemy = new Enemy(1, 100, 20, MathUtils.random(64, 1800), MathUtils.random(0, 900), true, 0);
+		Enemy enemy = new Enemy(1, 0, 20, MathUtils.random(64, 1800), MathUtils.random(0, 900), true, 0);
 		enemies.add(enemy);
 	}
 
@@ -99,14 +88,13 @@ public class GameScreen implements Screen{
 	
 	@Override
 	public void render(float delta) {
-		mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-
 		ScreenUtils.clear(0, 0, 0.2f, 1);
-
 		camera.update();
-
 		batch.setProjectionMatrix(camera.combined);
-
+		
+		Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+		P.move(mousePos.x, mousePos.y);
+		
 		batch.begin();
 
 		for (Enemy enemy : enemies) {
@@ -115,14 +103,23 @@ public class GameScreen implements Screen{
 			}
 
 		}
-		degrees = (float) ((Math.atan2(mousePos.x - player.x, -(mousePos.y - player.y)) * 180.0d / Math.PI) - 180.0f);
-		knightS.setRotation(degrees);
+		
+		
+
+		knightS.setPosition(P.getPlayerRectX(), P.getPlayerRectY());
+		P.setDegrees(mousePos.x, mousePos.y);
+		knightS.setRotation(P.getDegrees());
 		knightS.draw(batch);
-		batch.draw(sword, swordRect.x, swordRect.y);
+		batch.draw(sword, P.getSwordRectX(), P.getSwordRectY());
 		// batch.draw(knight, player.x, player.y);
 		batch.end();
 		
+		enemyPhysics();
 		
+		
+	}
+	
+	public void enemyPhysics() {
 		for (Enemy enemy : enemies) {
 			if (enemy.getIsAlive()) {
 				enemy.searchForPlayer(knightS);
@@ -130,159 +127,32 @@ public class GameScreen implements Screen{
 			}
 		}
 		
-		if (Gdx.input.isKeyPressed(Keys.A)) {// LEFT
-//			knightS.setRotation(90f);
-			if (xMs == 0 && yMs != 0) {
-
-				xMs = -maxMs;
-			} else if (xMs > 0) {
-				xMs -= 50;
-			} else if (xMs > -maxMs) {
-				xMs -= 5 - (xMs * 0.5);
-			} else if (xMs < -maxMs) {
-				xMs ++;
-			}
-
-			xDirectionMinus = true;
-			xDirectionPlus = false;
-
-		} else {
-			xDirectionMinus = false;
-		}
-
-		if (Gdx.input.isKeyPressed(Keys.D)) {// RIGHT
-//			knightS.setRotation(-90f);
-			if (xMs == 0 && yMs != 0) {
-				xMs = maxMs;
-			} else if (xMs < 0) {
-				xMs += 50;
-			} else if (xMs < maxMs) {
-				xMs += 5 + (xMs * 0.5);
-			} else if (xMs > maxMs) {
-				xMs --;
-			}
-
-			xDirectionPlus = true;
-			xDirectionMinus = false;
-
-		} else {
-			xDirectionPlus = false;
-		}
-
-		if (Gdx.input.isKeyPressed(Keys.W)) {// UP
-//	    	knightS.setRotation(0f);
-			if (yMs == 0 && yMs != 0) {
-				yMs = maxMs;
-			} else if (yMs < 0) {
-				yMs += 50;
-			} else if (yMs < maxMs) {
-				yMs += 5 + (yMs * 0.5);
-			} else if (yMs > maxMs) {
-				yMs --;
-			}
-			yDirectionPlus = true;
-			yDirectionMinus = false;
-		} else {
-			yDirectionPlus = false;
-		}
-
-		if (Gdx.input.isKeyPressed(Keys.S)) {// DOWN
-//	    knightS.setRotation(180f);
-			if (yMs == 0 && yMs != 0) {
-				yMs = -maxMs;
-			} else if (yMs > 0) {
-				yMs -= 50;
-			} else if (yMs > -maxMs) {
-				yMs -= 5 - (yMs * 0.5);
-			} else if (yMs < -maxMs) {
-				yMs ++;
-			}
-			yDirectionMinus = true;
-			yDirectionPlus = false;
-		} else {
-			yDirectionMinus = false;
-		}
+		tempP = P.getPlayerRect();
+		tempS = P.getSwordRect();
 		
-		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
-	        Gdx.app.exit();
-		}
-
-		if (xDirectionPlus == false && xDirectionMinus == false) {
-			if (xMs > 0) {
-				xMs -= 5 + (xMs * 0.03);
-			}
-
-			if (xMs < 0) {
-				xMs += 5 + (-xMs * 0.03);
-			}
-
-			if (xMs < 0.001 || xMs > -0.001) {
-				xMs -= xMs * 0.1;
-			}
-		}
-
-		if (yDirectionPlus == false && yDirectionMinus == false) {
-			if (yMs > 0) {
-				yMs -= 5 + (yMs * 0.03);
-			}
-
-			if (yMs < 0) {
-				yMs += 5 + (-yMs * 0.03);
-			}
-
-			if (yMs < 0.001 || yMs > -0.001) {
-				yMs -= yMs * 0.1;
-			}
-		}
-
-		player.x += xMs * Gdx.graphics.getDeltaTime();
-		player.y += yMs * Gdx.graphics.getDeltaTime();
-
-		if (player.x < 0)
-			player.x = 0;
-		if (player.x > 1920 - player.getWidth())
-			player.x = 1920 - player.getWidth();
-		if (player.y < 0)
-			player.y = 0;
-		if (player.y > 1080 - player.getWidth())
-			player.y = 1080 - player.getWidth();
-
-		knightS.setPosition(player.x, player.y);
-
-		if (mousePos.x > player.x + player.width) {
-			swordRect.setPosition(player.getX() + player.width, swordRect.getY());
-		} else if (mousePos.x < player.x - 86) {
-			swordRect.setPosition(player.getX() - 86, swordRect.getY());
-		} else if (mousePos.x > player.x - 86 && mousePos.x < player.x + player.width) {
-			swordRect.setPosition(mousePos.x, swordRect.getY());
-		}
-
-		if (mousePos.y > player.y + player.height) {
-			swordRect.setPosition(swordRect.getX(), player.y + player.height + 10);
-		} else if (mousePos.y < player.y - 60) {
-			swordRect.setPosition(swordRect.getX(), player.y - 60);
-		} else if (mousePos.y > player.y - 60 && mousePos.y < player.y + player.height) {
-			swordRect.setPosition(swordRect.getX(), mousePos.y);
-		}
 
 		for (Enemy enemy : enemies) {
-			if (swordRect.overlaps(enemy.getRectangle()) && Gdx.input.isTouched() && enemy.getInvincible() != true) {
-				System.out.println("test");
-				enemy.damage(attack, knightS);
-				System.out.println("hit enemy");
+			if (tempS.overlaps(enemy.getRectangle()) && Gdx.input.justTouched() && enemy.getInvincible() != true) {
+				//System.out.println("test");
+				enemy.damage(P.getAttack(), knightS);
+				//System.out.println("hit enemy");
 			}
 			
-			if(player.overlaps(enemy.getRectangle())) {
-				if (player.getX() > enemy.getXPos()) {
-					xMs = 500;
-				} else if (player.getX() < enemy.getXPos()) {
-					xMs = -500;
+			if(tempP.overlaps(enemy.getRectangle()) && P.getIsInvincible() != true) {
+				if (tempP.getX() > enemy.getXPos()) {
+					P.setXMs(500);
+					P.setIsInvincible(true);
+				} else if (tempP.getX() < enemy.getXPos()) {
+					P.setIsInvincible(true);
+					P.setXMs(-500);
 				}
 
-				if (player.getY() > enemy.getYPos()) {
-					yMs = 500;
-				} else if (player.getY() < enemy.getYPos()) {
-					yMs = -500;
+				if (tempP.getY() > enemy.getYPos()) {
+					P.setIsInvincible(true);
+					P.setYMs(500);
+				} else if (tempP.getY() < enemy.getYPos()) {
+					P.setIsInvincible(true);
+					P.setYMs(-500);
 				}
 			}
 		}
@@ -296,10 +166,9 @@ public class GameScreen implements Screen{
 		}
 		
 		if (currentMonsters == 0) {
-			System.out.println("Room empty, respawning enemies");
+			//System.out.println("Room empty, respawning enemies");
 			respawnMonsters();
 		}
-		
 	}
 	
 	@Override
