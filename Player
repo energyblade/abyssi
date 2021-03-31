@@ -49,12 +49,12 @@ public class Player {
 		
 	}
 	
-	private void setPlayerRectX(float x) {
+	public void setPlayerRectX(float x) {
 		player.x = x;
 
 	}
 	
-	private void setPlayerRectY(float y) {
+	public void setPlayerRectY(float y) {
 		player.y = y;
 
 	}
