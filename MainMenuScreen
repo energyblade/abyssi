@@ -1,5 +1,5 @@
 package com.badlogic.Abyssi;
-
+//IMPORT PACKAGES
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -25,7 +25,7 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		ScreenUtils.clear(0, 0, 0.2f, 1);
-
+		//DRAW EVERYTHING ONTO THE SCREEN
 		camera.update();
 		game.batch.setProjectionMatrix(camera.combined);
 
