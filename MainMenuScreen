@@ -3,6 +3,7 @@ package com.badlogic.Abyssi;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.abyssi.Abyssi;
 
@@ -11,10 +12,11 @@ public class MainMenuScreen implements Screen {
 	final Abyssi game;
 
 	OrthographicCamera camera;
-
+	private Texture logo;
+	
 	public MainMenuScreen(final Abyssi game) {
 		this.game = game;
-
+		logo = new Texture("logo.png");
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 480);
 	}
@@ -28,8 +30,10 @@ public class MainMenuScreen implements Screen {
 		game.batch.setProjectionMatrix(camera.combined);
 
 		game.batch.begin();
-		game.font.draw(game.batch, "Welcome to Abyssi!!! ", 100, 150);
-		game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+		game.batch.draw(logo, 200, 200);
+		game.font.getData().setScale(2,2);
+		game.font.draw(game.batch, "WELCOME!!! ", 100, 150);
+		game.font.draw(game.batch, "CLICK ANYWHERE TO ENTER THE ABYSS", 100, 100);
 		game.batch.end();
 
 		if (Gdx.input.isTouched()) {
