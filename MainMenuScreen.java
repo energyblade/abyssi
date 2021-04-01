@@ -1,8 +1,14 @@
-package com.badlogic.Abyssi;
-
+/*
+ * Rhys, Greg
+ * Abyssi
+ * April 1st, 2021
+ */
+package com.mygdx.abyssi;
+//IMPORT PACKAGES
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.abyssi.Abyssi;
 
@@ -11,10 +17,12 @@ public class MainMenuScreen implements Screen {
 	final Abyssi game;
 
 	OrthographicCamera camera;
-
+	private Texture logo;
+	
 	public MainMenuScreen(final Abyssi game) {
-		this.game = game;
 
+		this.game = game;
+		logo = new Texture("logo.png");
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 480);
 	}
@@ -23,15 +31,17 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		ScreenUtils.clear(0, 0, 0.2f, 1);
-
+		//DRAW THE MAIN MENU ONTO THE SCREEN
 		camera.update();
 		game.batch.setProjectionMatrix(camera.combined);
-
 		game.batch.begin();
-		game.font.draw(game.batch, "Welcome to Abyssi!!! ", 100, 150);
-		game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+		game.batch.draw(logo, 175, 200);
+		game.font.getData().setScale(1,1);
+		game.font.draw(game.batch, "WELCOME ", 375, 150);
+		game.font.draw(game.batch, "CLICK ANYWHERE TO ENTER THE ABYSS", 275, 100);
 		game.batch.end();
 
+		//START THE GAME
 		if (Gdx.input.isTouched()) {
 			game.setScreen(new GameScreen(game));
 			dispose();

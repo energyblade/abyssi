@@ -1,5 +1,10 @@
+/*
+ * Rhys, Greg
+ * Abyssi
+ * April 1st, 2021
+ */
 package com.mygdx.abyssi;
-
+//IMPORT PACKAGES
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -8,7 +13,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class Player {
-	private Rectangle player, swordRect;
+	private Rectangle player;
+	public Rectangle swordRect;
 	private int PWidth = 125, PHeight = 74, SWidth = 125, SHeight = 74;
 	private int maxMs = 400;
 	private int xMs = 0, yMs = 0;
@@ -19,7 +25,8 @@ public class Player {
 	private int iFrames = 90, invincibility;
 	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false, isInvincible = false;
 	private float degrees;
-	
+	private boolean alive = true;
+
 	public Player() {
 		player = new Rectangle();
 		setPlayerRectPos(1920 / 2 - 64 / 2, 1080 / 2, PWidth, PHeight);
@@ -28,6 +35,12 @@ public class Player {
 		setDegree(1920 / 2 - 64 / 2, 1080 / 2);
 		setXMs(0);
 		setYMs(0);
+		setAlive(alive);
+		
+	}
+
+	private void setAlive(boolean a) {
+		alive = a;
 		
 	}
 
@@ -101,6 +114,12 @@ public class Player {
 	
 	public void setHealth(float h) {
 		health = h;
+		if (getHealth() <= 0) {
+			setAlive(false);
+		}
+	}
+	public boolean getIsAlive() {
+		return alive;
 	}
 	
 	public boolean getIsInvincible() {
@@ -168,6 +187,7 @@ public class Player {
 	}
 	
 	public float getHealth() {
+		
 		return health;
 	}
 	
@@ -237,7 +257,8 @@ public class Player {
 			setYDirectionMinus(false);
 		}
 		
-		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+		
+		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {//EXIT GAME
 	        Gdx.app.exit();
 		}
 
@@ -261,8 +282,10 @@ public class Player {
 			}
 		}
 		
+		//SET PLAYER POSITION
 		setPlayerRectPos(getPlayerRectX() + getXMs() * Gdx.graphics.getDeltaTime(), getPlayerRectY() + getYMs()* Gdx.graphics.getDeltaTime() , PWidth, PHeight);
 
+		//SET PLAYER BOUNDS
 		if (getPlayerRectX() < 0)
 			setPlayerRectX(0);
 		if (getPlayerRectX() > 1920 - PWidth)
@@ -272,6 +295,7 @@ public class Player {
 		if (getPlayerRectY() > 1080 - PWidth)
 			setPlayerRectY(1080 - PWidth);
 		
+		//SET BOX FOR SWORD AROUND PLAYER
 		if (x > player.x + player.width) {
 			swordRect.setPosition(player.getX() + player.width, swordRect.getY());
 		} else if (x < player.x - 86) {
@@ -295,9 +319,6 @@ public class Player {
 			isInvincible = false;
 		}
 	}
+}
 
 	
-
-	
-	
-	}

@@ -1,7 +1,11 @@
+/*
+ * Rhys, Greg
+ * Abyssi
+ * April 1st, 2021
+ */
 package com.mygdx.abyssi;
 
 
-import com.badlogic.Abyssi.MainMenuScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
