@@ -1,5 +1,5 @@
 package com.badlogic.Abyssi;
-
+//IMPORT PACKAGES
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
@@ -34,15 +34,13 @@ import com.mygdx.abyssi.Player;
 
 public class GameScreen implements Screen{
 	final Abyssi game;
-	
+	//DECLARE VARIABLES
 	public SpriteBatch batch; 
 	public Sprite knightS;
-	private Texture knight, goblin, sword, door, openDoor, instructions;
+	private Texture knight, goblin, sword, door, openDoor, instructions, gameover;
 	private OrthographicCamera camera;
 	
-	
 	public Rectangle tempP, tempS;
-
 	
 	BitmapFont font;
 	CharSequence str;
@@ -67,19 +65,19 @@ public class GameScreen implements Screen{
 	
 	public GameScreen(final Abyssi game) {
 		this.game = game;
-		
-		font = new BitmapFont();
-
+			
+		//INITIALIZE TEXTURES AND VARIABLES
 		Pixmap pm = new Pixmap(Gdx.files.internal("crosshair.png"));
 		Gdx.graphics.setCursor(Gdx.graphics.newCursor(pm, 0, 0));
 		pm.dispose();
-
 		knight = new Texture("knight.png");
 		goblin = new Texture("goblin.png");
 		sword = new Texture("sword.png");
+		font = new BitmapFont();
 		door = new Texture("door.png");
 		openDoor = new Texture("opendoor.png");
 		instructions = new Texture("instructions.png");
+		gameover = new Texture("deathScreen.png");
 		knightS = new Sprite(knight);
 
 		camera = new OrthographicCamera();
@@ -92,23 +90,21 @@ public class GameScreen implements Screen{
 		healthBar.setPosition(10, 20);
 		stage.addActor(healthBar);
 		
-		// temp = new Rectangle();
-
+		//INITIALIZE ENEMIES
 		enemies = new Array<Enemy>();
-//		goblins = new Array<Rectangle>();
-
 		for (int i = 0; i < maxMonsters; i++) {
 			spawnMonster();
 		}
 
 	}
-
+	
+	//SPAWN MONSTERS
 	private void spawnMonster() {
 		Enemy enemy = new Enemy(1, 100, 10, MathUtils.random(64, 1800), MathUtils.random(0, 500), true, 0);
 		enemy.setHealth(0);
 		enemies.add(enemy);
 	}
-
+	//RESPAWN MONSTERS
 	private void respawnMonsters() {
 		for (Enemy enemy : enemies) {
 			System.out.println("reviving...");
@@ -126,7 +122,7 @@ public class GameScreen implements Screen{
 		
 		Vector3 mousePos = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 		
-		
+		//DRAW EVERYTHING ON THE SCREEN
 		batch.begin();
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -137,34 +133,48 @@ public class GameScreen implements Screen{
 		stage.draw();
 		stage.act();
 
-		
-		
 		P.move(mousePos.x, mousePos.y);
 		roomEvents();
-		 
+		death();
 		for (Enemy enemy : enemies) {
 			if (enemy.getIsAlive()) {
 				batch.draw(goblin, enemy.getXPos(), enemy.getYPos());
 				str = enemy.getHealth() + "";
 				font.draw(batch, str, enemy.getXPos() + 20, enemy.getYPos() - 5);
 			}
-
 		}
-
+		
+		//SET POSITION OF PLAYER AND SWORD
 		knightS.setPosition(P.getPlayerRectX(), P.getPlayerRectY());
 		P.setDegrees(mousePos.x, mousePos.y);
 		knightS.setRotation(P.getDegrees());
 		knightS.draw(batch);
 		batch.draw(sword, P.getSwordRectX(), P.getSwordRectY());
-		// batch.draw(knight, player.x, player.y);
 		batch.end();
-		
-		
-		
-		
 		
 	}
 	
+	//DEATH SCREEN
+	private void death() {
+		if (!P.getIsAlive()) {
+			batch.draw(gameover,0, 0);
+			if (Gdx.input.justTouched()) {
+			game.setScreen(new GameScreen(game));
+			dispose();
+			}
+			P.setPlayerRectX(-100);
+			P.setPlayerRectY(-100);
+			P.swordRect.setPosition(-100,-100);
+			for (Enemy enemy : enemies) {
+			enemy.setPos(-100,-100);	
+			}
+		}
+		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {//EXIT GAME
+	        Gdx.app.exit();
+		}
+	}
+	
+	//WHAT IS GOING ON IN THE ROOM
 	private void roomEvents() {
 		if(grace != true && fightingRoom) {
 		enemyPhysics();
@@ -178,7 +188,7 @@ public class GameScreen implements Screen{
 				respawnMonsters();
 			}
 		}
-		
+		//NO ENEMIES
 		if(fightingRoom && isFighting == false || startRoom) {
 			batch.draw(openDoor, 850, 880);
 			if(P.getPlayerRectY() > 900 && P.getPlayerRectX() < 1000 && P.getPlayerRectX() > 600 && Gdx.input.justTouched()) {
@@ -197,7 +207,10 @@ public class GameScreen implements Screen{
 		}
 	}
 
+	//ENEMY MOVEMENT
 	public void enemyPhysics() {
+		
+		//SEARCHING FOR ENEMIES
 			for (Enemy enemy : enemies) {
 			if (enemy.getIsAlive()) {
 				enemy.searchForPlayer(knightS);
@@ -208,14 +221,13 @@ public class GameScreen implements Screen{
 		tempP = P.getPlayerRect();
 		tempS = P.getSwordRect();
 		
-
+		//ATTACKING THE PLAYER
 		for (Enemy enemy : enemies) {
 			if (tempS.overlaps(enemy.getRectangle()) && Gdx.input.justTouched() && enemy.getInvincible() != true) {
-				//System.out.println("test");
 				enemy.damage(P.getAttack(), knightS);
-				//System.out.println("hit enemy");
 			}
 			
+			//KNOCKBACK 
 			if(tempP.overlaps(enemy.getRectangle()) && P.getIsInvincible() != true) {
 				if (tempP.getX() > enemy.getXPos()) {
 					P.setXMs(500);
@@ -239,7 +251,7 @@ public class GameScreen implements Screen{
 				System.out.println(P.getHealth());
 			}
 		}
-
+		
 		currentMonsters = 0;
 		for(Enemy enemy : enemies) {
 			if(enemy.getIsAlive()) {
@@ -282,5 +294,6 @@ public class GameScreen implements Screen{
 	public void dispose() {
 		batch.dispose();
 		knight.dispose();
+		font.dispose();
 	}
 }
