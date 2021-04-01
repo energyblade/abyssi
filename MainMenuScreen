@@ -15,6 +15,7 @@ public class MainMenuScreen implements Screen {
 	private Texture logo;
 	
 	public MainMenuScreen(final Abyssi game) {
+
 		this.game = game;
 		logo = new Texture("logo.png");
 		camera = new OrthographicCamera();
@@ -25,17 +26,17 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		ScreenUtils.clear(0, 0, 0.2f, 1);
-		//DRAW EVERYTHING ONTO THE SCREEN
+		//DRAW THE MAIN MENU ONTO THE SCREEN
 		camera.update();
 		game.batch.setProjectionMatrix(camera.combined);
-
 		game.batch.begin();
-		game.batch.draw(logo, 200, 200);
-		game.font.getData().setScale(2,2);
-		game.font.draw(game.batch, "WELCOME!!! ", 100, 150);
-		game.font.draw(game.batch, "CLICK ANYWHERE TO ENTER THE ABYSS", 100, 100);
+		game.batch.draw(logo, 175, 200);
+		game.font.getData().setScale(1,1);
+		game.font.draw(game.batch, "WELCOME ", 375, 150);
+		game.font.draw(game.batch, "CLICK ANYWHERE TO ENTER THE ABYSS", 275, 100);
 		game.batch.end();
 
+		//START THE GAME
 		if (Gdx.input.isTouched()) {
 			game.setScreen(new GameScreen(game));
 			dispose();
