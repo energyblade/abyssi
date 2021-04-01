@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Enemy {
-	//ATTRIBUTES
 	private int Ms = 100;
 	private int health;
 	private int attack;
@@ -25,7 +24,7 @@ public class Enemy {
 		setPos(x, y);
 		setIsAlive(alive);
 	}
-	//HITBOX
+
 	private void setHitbox(float x, float y) {
 		hitbox = new Rectangle();
 		hitbox.x = x;
@@ -95,8 +94,7 @@ public class Enemy {
 	private void setIsAlive(boolean a) {
 		isAlive = a;
 	}
-	
-	//RUN TOWARD PLAYER
+
 	public void searchForPlayer(Sprite player) {
 		int x;
 		int y;
@@ -139,7 +137,7 @@ public class Enemy {
 		ySpeed = y;
 
 	}
-	
+
 	public void clockInvincibility() {
 		setInvincibility(invincibleTimeLeft - 1);
 	}
