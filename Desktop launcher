@@ -1,11 +1,12 @@
 package com.mygdx.abyssi.desktop;
-
+//IMPORT PACKAGES
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.mygdx.abyssi.Abyssi;
 
 
 public class DesktopLauncher {
+	//LAUNCH
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 	      config.title = "Abyssi";
