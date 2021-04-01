@@ -1,5 +1,5 @@
 package com.mygdx.abyssi;
-//IMPORT PACKAGES
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -8,19 +8,19 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 public class Player {
-	//CREATE PLAYER VARIABLES
 	private Rectangle player, swordRect;
 	private int PWidth = 125, PHeight = 74, SWidth = 125, SHeight = 74;
 	private int maxMs = 400;
 	private int xMs = 0, yMs = 0;
 	private int attack = 50;
 	private int acceleration = 50;
+	private float health = 200;
+	private float maxHealth = 200;
 	private int iFrames = 90, invincibility;
 	private boolean xDirectionPlus = false, xDirectionMinus = false, yDirectionPlus = false, yDirectionMinus = false, isInvincible = false;
 	private float degrees;
 	
 	public Player() {
-		//INITIALIZE PLAYER AND SWORD
 		player = new Rectangle();
 		setPlayerRectPos(1920 / 2 - 64 / 2, 1080 / 2, PWidth, PHeight);
 		swordRect = new Rectangle();
@@ -30,11 +30,11 @@ public class Player {
 		setYMs(0);
 		
 	}
-	//DEGREES
+
 	private void setDegree(float x, float y) {
 		degrees = (float) ((Math.atan2(x - player.x, -(y - player.y)) * 180.0d / Math.PI) - 180.0f);		
 	}
-	
+
 	private void setSwordRectPos(float x, float y, int w, int h) {
 		swordRect.x = x;
 		swordRect.x = y;
@@ -99,8 +99,16 @@ public class Player {
 		isInvincible = true;
 	}
 	
+	public void setHealth(float h) {
+		health = h;
+	}
+	
 	public boolean getIsInvincible() {
 		return isInvincible;
+	}
+	
+	public float getMaxHealth() {
+		return maxHealth;
 	}
 	
 	public float getDegrees() {
@@ -159,9 +167,13 @@ public class Player {
 		return yDirectionPlus;
 	}
 	
+	public float getHealth() {
+		return health;
+	}
 	
 	public void move(float x, float y) {
 		if (Gdx.input.isKeyPressed(Keys.A)) {// LEFT
+//			knightS.setRotation(90f);
 			if (getXMs() > 0) {
 				setXMs(getXMs() - 50);
 			} else if (getXMs() > -maxMs) {
@@ -193,7 +205,9 @@ public class Player {
 			setXDirectionPlus(false);
 		}
 
-		if (Gdx.input.isKeyPressed(Keys.W)) {// UP		
+		if (Gdx.input.isKeyPressed(Keys.W)) {// UP
+			
+			
 			if (getYMs() < 0) {
 				setYMs(getYMs() + 50);
 			} else if (getYMs() < maxMs) {
@@ -258,7 +272,6 @@ public class Player {
 		if (getPlayerRectY() > 1080 - PWidth)
 			setPlayerRectY(1080 - PWidth);
 		
-		//SWORD POSITION AND BOX
 		if (x > player.x + player.width) {
 			swordRect.setPosition(player.getX() + player.width, swordRect.getY());
 		} else if (x < player.x - 86) {
@@ -275,13 +288,15 @@ public class Player {
 			swordRect.setPosition(swordRect.getX(), y);
 		}
 		
-		//INVINCIBILITY FRAMES
+		
 		if(invincibility > 0) {
 			invincibility --;
 		}else {
 			isInvincible = false;
 		}
 	}
+
+	
 
 	
 	
