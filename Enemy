@@ -1,5 +1,5 @@
 package com.mygdx.abyssi;
-
+	//IMPORT PACKAGES
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Enemy {
+	//DECLARE VARIABLES 
 	private int Ms = 100;
 	private int health;
 	private int attack;
@@ -17,6 +18,7 @@ public class Enemy {
 	private boolean isAlive;
 	private Rectangle hitbox;
 
+	//ENEMY OBJECT
 	public Enemy(int attackType, int hp, int ad, float x, float y, boolean alive, int invincibility) {
 		setHealth(hp);
 		setAttack(ad);
@@ -24,7 +26,7 @@ public class Enemy {
 		setPos(x, y);
 		setIsAlive(alive);
 	}
-
+	//HITBOX
 	private void setHitbox(float x, float y) {
 		hitbox = new Rectangle();
 		hitbox.x = x;
@@ -55,7 +57,6 @@ public class Enemy {
 
 	public void setHealth(int hp) {
 		health = hp;
-
 		if (getHealth() <= 0) {
 			setIsAlive(false);
 			setPos(-100, -100);
@@ -64,7 +65,7 @@ public class Enemy {
 		}
 
 	}
-
+	//ATTACKING THE PLAYER
 	public void damage(int ad, Sprite player) {
 		setHealth(getHealth() - ad);
 		setInvincibility(iFrames);
@@ -94,7 +95,7 @@ public class Enemy {
 	private void setIsAlive(boolean a) {
 		isAlive = a;
 	}
-
+	//SEARCHING AND MOVING TOWARD PLAYER
 	public void searchForPlayer(Sprite player) {
 		int x;
 		int y;
